@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+     "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="org.crowd.dao.ProviderTypeMapper">
+   
+   
+   <!-- 服务商类型对象映射 -->
+   <resultMap type="org.crowd.model.ProviderType" id="initproviderTypeResultMap">
+     <result column="PTE_ID" property="id" />
+     <result column="PTE_NAME" property="name" />
+     </resultMap>
+     
+   <!-- 查找所有配置过的服务商类型 -->
+     <select id="selectProviderType" resultMap="initproviderTypeResultMap">
+     SELECT * FROM T_PROVIDERTYPE
+     </select>
+     
+   <!-- 检查服务商类型名称是否重复-->
+     <select id="checkProviderType" resultType="java.lang.Integer">
+     SELECT * FROM T_PROVIDERTYPE WHERE PTE_NAME=#{name}
+     </select>
+     
+   <!-- 新增服务商类型-->
+     <insert id="addProviderType" >
+     INSERT INTO T_PROVIDERTYPE VALUES(SEQ_PTE.NEXTVAL+5,#{name})
+     </insert>
+
+</mapper>

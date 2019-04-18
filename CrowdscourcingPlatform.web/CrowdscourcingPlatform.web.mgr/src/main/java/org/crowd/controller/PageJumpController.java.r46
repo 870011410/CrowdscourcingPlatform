@@ -1,0 +1,105 @@
+package org.crowd.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+/**
+ * 
+ * <p>
+ * Title : PageJumpController
+ * </p>
+ * <p>
+ * Description :
+ * </p>
+ * <p>
+ * DevelopTools : Eclipse_x64_v4.9.0
+ * </p>
+ * <p>
+ * DevelopSystem : window 7
+ * </p>
+ * <p>
+ * Company : org.crowd
+ * </p>
+ * 
+ * @author : zhengjiawei
+ * @date : 2018年12月6日 下午1:26:07
+ * @version : 12.0.0
+ */
+
+@Controller
+public class PageJumpController {
+	// 界面跳转的controller
+
+	// 主界面跳转
+	@RequestMapping("MainFrame.html")
+	public ModelAndView MainFrameJsp() {
+
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("manager");
+		return mv;
+	}
+	// 模版界面跳转
+
+	@RequestMapping("model.html")
+	public ModelAndView ModelJsp() {
+
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("model");
+		return mv;
+	}
+
+	// 需求类型配置界面的跳转
+	@RequestMapping("demandTypeConfig.html")
+	public ModelAndView DemandTypeConfig() {
+
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("demandTypeConfig");
+		return mv;
+	}
+
+	//故事配置界面跳转
+	@RequestMapping("story.html")
+	public ModelAndView Story() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("story");
+		return mv;
+	}
+
+	//发布故事界面跳转
+	@RequestMapping("createStory.html")
+	public ModelAndView createStory() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("createStory");
+		return mv;
+	}
+	
+	// 雇主管理界面跳转
+
+	@RequestMapping("buyerControl.html")
+	public ModelAndView buyControlJsp() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("buyerControl");
+		return mv;
+	}
+	// 服务商管理界面跳转
+
+	@RequestMapping("salerControl.html")
+	public ModelAndView salerControlJsp() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("salerControl");
+		return mv;
+	}
+	
+	//需求管理界面的跳转
+	
+	@RequestMapping("needManage.html")
+	public ModelAndView needManageJsp() {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("needManage");
+		return mv;
+	}
+	
+	
+	
+}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.StoryMapper">
+
+	<resultMap type="org.crowd.model.Story" id="StoryResultMap">
+		<result column="STO_ID" property="id"></result>
+		<result column="STO_TITLE" property="title"></result>
+		<result column="STO_CONTENT" property="content"></result>
+		<result column="USE_NAME" property="useName"></result>
+		<result column="STO_STATE" property="state"></result>
+		<result column="STO_RANK" property="rank"></result>
+		<result column="STO_CREATE_TIME" property="createTime"></result>
+	</resultMap>
+
+	<select id="countAllStorys" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_STORY S JOIN T_USER U ON S.STO_USE_ID=U.USE_ID
+		<if test="time_from != null and time_from != '' ">
+			AND TO_CHAR(S.STO_CREATE_TIME,'YYYY-MM-DD')&gt;= #{time_from} AND
+			TO_CHAR(S.STO_CREATE_TIME,'YYYY-MM-DD')&lt;= #{time_to}
+		</if>
+		<if test="title != null and title != '' ">
+			AND S.STO_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+		<if test="useName != null and useName != '' ">
+			AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{useName}),'%')
+		</if>
+		<if test="state != null ">
+			AND S.STO_STATE= #{state}
+		</if>
+	</select>
+
+	<select id="showAllStorys" resultMap="StoryResultMap">
+		SELECT S.*,U.USE_NAME FROM T_STORY S JOIN T_USER U ON S.STO_USE_ID=U.USE_ID
+		<if test="time_from != null and time_from != '' ">
+			AND TO_CHAR(S.STO_CREATE_TIME,'YYYY-MM-DD')&gt;= #{time_from} AND
+			TO_CHAR(S.STO_CREATE_TIME,'YYYY-MM-DD')&lt;= #{time_to}
+		</if>
+		<if test="title != null and title != '' ">
+			AND S.STO_TITLE	LIKE CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+		<if test="useName != null and useName != '' ">
+			AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{useName}),'%')
+		</if>
+		<if test="state != null ">
+			AND S.STO_STATE= #{state}
+		</if>
+		ORDER BY S.STO_RANK
+	</select>
+
+	<select id="checkUser" resultType="java.lang.Integer">
+		SELECT U.USE_ID FROM T_USER U WHERE U.USE_ACC= #{useAcc}
+	</select>
+
+	<select id="checkUserStory" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_STORY S WHERE S.STO_USE_ID= #{useId}
+	</select>
+	
+	<select id="checkStoryTitle" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_STORY S WHERE S.STO_TITLE= #{title}
+	</select>
+
+	<insert id="createStory">
+		INSERT INTO T_STORY
+		VALUES(SEQ_STO.NEXTVAL,#{title},#{content},#{useId},0,SEQ_STO_RANK.NEXTVAL,NULL,SYSDATE,NULL)
+	</insert>
+
+	<update id="updateStory">
+		UPDATE T_STORY S SET S.STO_CONTENT= #{content},S.STO_TITLE= #{title} WHERE S.STO_ID= #{id}
+	</update>
+	
+	<select id="checkUpdateTitle" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_STORY S WHERE S.STO_TITLE= #{title} AND S.STO_ID<![CDATA[ <> ]]>#{id}
+	</select>
+
+	<delete id="delStory">
+		DELETE FROM T_STORY S WHERE S.STO_ID= #{id}
+	</delete>
+
+	<update id="beforeStick">
+		UPDATE T_STORY S SET S.STO_RANK=S.STO_RANK+1 WHERE S.STO_RANK &lt; #{rank}
+	</update>
+
+	<update id="stickStory">
+		UPDATE T_STORY S SET S.STO_RANK=1 WHERE S.STO_ID= #{id}
+	</update>
+	
+	<update id="uplineStory">
+		UPDATE T_STORY S SET S.STO_STATE=1 WHERE S.STO_ID= #{id}
+	</update>
+	
+	<update id="downlineStory">
+		UPDATE T_STORY S SET S.STO_STATE=0 WHERE S.STO_ID= #{id}
+	</update>
+
+</mapper>

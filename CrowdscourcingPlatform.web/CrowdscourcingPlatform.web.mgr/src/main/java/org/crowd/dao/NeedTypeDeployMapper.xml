@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+     "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="org.crowd.dao.NeedTypeDeployMapper">
+   
+   
+   <!-- 需求类型对象映射 -->
+   <resultMap type="org.crowd.model.NeedTypeModel" id="needTypeModelResultMap">
+     <result column="NTE_ID" property="id" />
+     <result column="NTE_NAME" property="name" />
+      <result column="NTE_STE_ID" property="steId" />
+     </resultMap>
+   <!-- 查找所有配置过的需求类型 -->
+     <select id="selectNeedType" resultMap="needTypeModelResultMap">
+     SELECT * FROM T_NEEDTYPE
+     </select>
+
+<!-- 判断这个需求名字是否已经存在-->
+     <select id="checkNeedName" resultType="java.lang.String">
+    SELECT NTE_NAME FROM T_NEEDTYPE WHERE NTE_NAME =  #{needTypeName}
+     </select>
+
+<!-- 添加一个需求类型 -->
+   <insert id="addNewNeedType">
+     INSERT INTO T_NEEDTYPE (NTE_ID,NTE_NAME,NTE_STE_ID) VALUES(SEQ_NTE.NEXTVAL,#{needTypeName},#{serverId})
+   </insert>
+</mapper>

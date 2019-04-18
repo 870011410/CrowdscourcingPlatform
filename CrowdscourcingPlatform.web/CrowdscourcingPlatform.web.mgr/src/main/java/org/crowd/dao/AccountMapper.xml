@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.AccountMapper">
+
+
+
+
+	<!-- 账户对账的条数 -->
+	<select id="accountCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_ACCOUNTS A INNER JOIN T_USER U
+		ON U.USE_ID = A.ACC_USE_ID AND A.ACC_STATE != 0
+		AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		<if test="sTime != null and sTime !='' ">
+			AND TO_CHAR(A.ACC_UPDATE,'YYYY-MM-DD')&gt;= #{sTime} AND
+			TO_CHAR(A.ACC_UPDATE,'YYYY-MM-DD')&lt;= #{eTime}
+		</if>
+		LEFT JOIN T_USER US ON A.ACC_PRO_ID = US.USE_ID
+		LEFT JOIN T_NEED N ON A.ACC_NEE_ID = N.NEE_ID
+		LEFT JOIN T_WORKS W ON A.ACC_WOR_ID = W.WOR_ID
+		LEFT JOIN T_LEAGUE L ON A.ACC_LEA_ID = L.LEA_ID
+	</select>
+
+
+	<!-- 账户对账映射 -->
+	<resultMap type="org.crowd.model.dto.AccountDetaDto" id="accountDetaDtoResultMap">
+		<result column="U_NAME" property="useName" />
+		<result column="PRO_NAME" property="serName" />
+		<result column="LEA_NAME" property="leaName" />
+		<result column="WOR_TITLE" property="worTitle" />
+		<result column="NEE_TITLE" property="neeTitle" />
+		<result column="ACC_MONEY" property="money" />
+		<result column="ACC_UPDATE" property="updateTime" />
+		<result column="ACC_STATE" property="state" />
+
+	</resultMap>
+
+	<!-- 账户对账的数据 -->
+	<select id="accountMeg" resultMap="accountDetaDtoResultMap">
+		SELECT U.USE_NAME U_NAME,US.USE_NAME PRO_NAME,
+		L.LEA_NAME,W.WOR_TITLE,N.NEE_TITLE,A.ACC_MONEY,A.ACC_UPDATE,A.ACC_STATE
+		FROM T_ACCOUNTS A INNER JOIN T_USER U
+		ON U.USE_ID = A.ACC_USE_ID AND A.ACC_STATE != 0
+		AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		<if test="sTime != null and sTime !='' ">
+			AND TO_CHAR(A.ACC_UPDATE,'YYYY-MM-DD')&gt;= #{sTime} AND
+			TO_CHAR(A.ACC_UPDATE,'YYYY-MM-DD')&lt;= #{eTime}
+		</if>
+		LEFT JOIN T_USER US ON A.ACC_PRO_ID = US.USE_ID
+		LEFT JOIN T_NEED N ON A.ACC_NEE_ID = N.NEE_ID
+		LEFT JOIN T_WORKS W ON A.ACC_WOR_ID = W.WOR_ID
+		LEFT JOIN T_LEAGUE L ON A.ACC_LEA_ID = L.LEA_ID
+	</select>
+
+</mapper>

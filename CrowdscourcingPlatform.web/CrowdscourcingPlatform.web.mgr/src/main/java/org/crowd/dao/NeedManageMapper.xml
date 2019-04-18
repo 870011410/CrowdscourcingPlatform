@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.NeedManageMapper">
+
+	
+<!-- 需求的量（需求管理的表格页码） -->
+	<select id="selectNeedCount" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM T_NEED N 
+INNER JOIN T_USER U ON N.NEE_USE_ID = U.USE_ID AND N.NEE_STATE &lt;=2  
+INNER JOIN T_NEEDTYPE NE ON N.NEE_TYPE = NE.NTE_ID 
+AND N.NEE_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%') 
+ AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%') 
+ <if test="needId != -1 and needId !='' ">
+  AND N.NEE_TYPE = #{needId} 
+</if>
+<if test="sTime != null and sTime !='' ">
+   AND TO_CHAR(N.NEE_CREATE_TIME,'YYYY-MM-DD')&gt;= #{sTime} AND
+			TO_CHAR(N.NEE_CREATE_TIME,'YYYY-MM-DD')&lt;= #{eTime} 
+</if>
+	</select>
+
+<!-- 需求对象NeedDeti映射 -->
+<resultMap type="org.crowd.model.dto.NeedDeti" id="NeedDetiMap">
+		<result column="NEE_ID" property="id"></result>
+		<result column="NEE_TITLE" property="title"></result>
+		<result column="NEE_CONTENT" property="content"></result>
+		<result column="NEE_DEMAND" property="demand"></result>
+		<result column="NEE_MONEY" property="money"></result>
+		<result column="NEE_USE_ID" property="userId"></result>
+		<result column="NEE_TYPE" property="type"></result>
+		<result column="NEE_STATE" property="state"></result>
+		<result column="NEE_END_TIME" property="endTime"></result>
+		<result column="NEE_MEMO" property="memo"></result>
+		<result column="NEE_CREATE_TIME" property="createTime"></result>
+		<result column="NEE_UPDATE_TIME" property="updateTime"></result>
+		<result column="USE_NAME" property="userName"></result>
+		<result column="NTE_NAME" property="nteName"></result>
+	</resultMap>
+<!-- 需求数据（需求管理的表格数据） -->
+	<select id="selectNeedMeg" resultMap="NeedDetiMap">
+	SELECT * FROM T_NEED N 
+INNER JOIN T_USER U ON N.NEE_USE_ID = U.USE_ID AND N.NEE_STATE &lt;=2 
+INNER JOIN T_NEEDTYPE NE ON N.NEE_TYPE = NE.NTE_ID  
+AND N.NEE_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%') 
+ AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%') 
+ <if test="needId != -1 and needId !='' ">
+  AND N.NEE_TYPE = #{needId} 
+</if>
+<if test="sTime != null and sTime !='' ">
+ AND TO_CHAR(N.NEE_CREATE_TIME,'YYYY-MM-DD')&gt;= #{sTime} AND
+			TO_CHAR(N.NEE_CREATE_TIME,'YYYY-MM-DD')&lt;= #{eTime} 
+</if>
+	</select>
+
+<!-- 改变需求的状态 -->
+<update id="updateNeedState">
+UPDATE T_NEED SET NEE_STATE = #{state} WHERE NEE_ID = #{needId}
+
+</update>
+
+</mapper>

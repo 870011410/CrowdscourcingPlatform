@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.TrendsMapper">
+
+	<resultMap type="org.crowd.model.Trends" id="TrendsResultMap">
+		<result column="TRE_ID" property="id"></result>
+		<result column="TRE_NAME" property="name"></result>
+		<result column="TRE_LINK" property="link"></result>
+		<result column="TRE_STE_ID" property="steId"></result>
+		<result column="STE_NAME" property="steName"></result>
+		<result column="TRE_STATE" property="state"></result>
+		<result column="TRE_CREATE_TIME" property="createTime"></result>
+	</resultMap>
+
+	<select id="countAllTrends" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_TRENDS T WHERE T.TRE_STATE=1
+	</select>
+
+	<select id="showAllTrends" resultMap="TrendsResultMap">
+		SELECT * FROM T_TRENDS T WHERE T.TRE_STATE=1 ORDER BY T.TRE_ID DESC
+	</select>
+
+</mapper>

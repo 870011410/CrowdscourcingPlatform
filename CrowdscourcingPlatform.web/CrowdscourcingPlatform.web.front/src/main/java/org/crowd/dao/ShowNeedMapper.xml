@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+     "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="org.crowd.dao.ShowNeedMapper">
+   
+   <!-- 需求类型对象映射 -->
+   <resultMap type="org.crowd.model.NeedTypeModel" id="needTypeModelResultMap">
+     <result column="NTE_ID" property="id" />
+     <result column="NTE_NAME" property="name" />
+      <result column="NTE_STE_ID" property="steId" />
+     </resultMap>
+   <!-- 查找所有配置过的需求类型(某个服务类型下的) -->
+     <select id="selectNeedTypeWithServ" resultMap="needTypeModelResultMap">
+     SELECT * FROM T_NEEDTYPE WHERE NTE_STE_ID =#{serverTypeId}
+     </select>
+     
+     <!-- 需求对象NeedDeti映射 -->
+<resultMap type="org.crowd.model.dto.NeedDeti" id="NeedDetiMap">
+		<result column="NEE_ID" property="id"></result>
+		<result column="NEE_TITLE" property="title"></result>
+		<result column="NEE_CONTENT" property="content"></result>
+		<result column="NEE_DEMAND" property="demand"></result>
+		<result column="NEE_MONEY" property="money"></result>
+		<result column="NEE_USE_ID" property="userId"></result>
+		<result column="NEE_TYPE" property="type"></result>
+		<result column="NEE_STATE" property="state"></result>
+		<result column="NEE_END_TIME" property="endTime"></result>
+		<result column="NEE_MEMO" property="memo"></result>
+		<result column="NEE_CREATE_TIME" property="createTime"></result>
+		<result column="NEE_UPDATE_TIME" property="updateTime"></result>
+		<result column="USE_NAME" property="userName"></result>
+		<result column="NTE_NAME" property="nteName"></result>
+	</resultMap>
+     
+     
+     
+    <!-- 需求的显示的数量 截止日期前的 -->
+     <select id="selectNeedCount" resultType="java.lang.Integer">
+     SELECT COUNT(*) FROM T_NEED N 
+INNER JOIN T_USER U ON N.NEE_USE_ID = U.USE_ID AND N.NEE_STATE =0 
+   AND TO_CHAR(N.NEE_END_TIME,'YYYY-MM-DD')&gt;= TO_CHAR(SYSDATE,'YYYY-MM-DD')
+INNER JOIN T_NEEDTYPE NE ON N.NEE_TYPE = NE.NTE_ID 
+<if test="servId != -1 and servId!=null">
+ AND NE.NTE_STE_ID =#{servId}
+        </if>
+AND N.NEE_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%') 
+<if test="typeId != -1 and typeId!=null">
+ AND N.NEE_TYPE =#{typeId}
+        </if>
+    ORDER BY N.NEE_ID DESC
+     </select>
+     
+      <!-- 需求的显示的内容 截止日期前的 -->
+      <select id="selectNeedMeg" resultMap="NeedDetiMap">
+     SELECT * FROM T_NEED N 
+INNER JOIN T_USER U ON N.NEE_USE_ID = U.USE_ID AND N.NEE_STATE =0 
+   AND TO_CHAR(N.NEE_END_TIME,'YYYY-MM-DD')&gt;= TO_CHAR(SYSDATE,'YYYY-MM-DD')
+INNER JOIN T_NEEDTYPE NE ON N.NEE_TYPE = NE.NTE_ID 
+<if test="servId != -1 and servId!=null">
+ AND NE.NTE_STE_ID =#{servId}
+        </if>
+AND N.NEE_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%') 
+<if test="typeId != -1 and typeId!=null">
+ AND N.NEE_TYPE =#{typeId}
+        </if>
+    ORDER BY N.NEE_ID DESC
+     </select>
+     
+  <!-- 显示某一个需求的信息-->
+      <select id="selectNeedMegWithNeedId" resultMap="NeedDetiMap">
+     SELECT * FROM T_NEED N 
+INNER JOIN T_USER U ON N.NEE_USE_ID = U.USE_ID   
+INNER JOIN T_NEEDTYPE NE ON N.NEE_TYPE = NE.NTE_ID 
+ AND N.NEE_ID =#{needId}
+     </select>   
+   
+   <!-- 需求详细界面的投标人对象映射 -->
+   <resultMap type="org.crowd.model.dto.TenderLeaOrUserDto" id="TenderLeaOrUserDtoMap">
+		<result column="NEE_ID" property="needId"></result>
+		<result column="USE_ID" property="userId"></result>
+		<result column="USE_NAME" property="userName"></result>		
+		<result column="LEA_ID" property="leaId"></result>
+		<result column="LEA_NAME" property="leaName"></result>
+		<result column="BID_ID" property="bidId"></result>
+		<result column="USE_SRC" property="userImg"></result>
+		<result column="LEA_SRC" property="leaUrl"></result>
+		
+		
+	</resultMap>
+   <!-- 显示某一个需求的信息-->
+      <select id="showTenderPeopleWithNeedId" resultMap="TenderLeaOrUserDtoMap">
+     SELECT * FROM T_NEED N  
+INNER JOIN T_BID  B ON B.BID_NEE_ID = N.NEE_ID AND N.NEE_ID=#{needId}
+AND B.BID_STATE = 0 
+LEFT JOIN T_USER U ON U.USE_ID = B.BID_USE_ID 
+LEFT JOIN T_LEAGUE L ON L.LEA_ID = B.BID_LEA_ID
+     </select>
+ 
+ <!-- 投标信息的映射-->
+   <resultMap type="org.crowd.model.dto.TenderMegTableDto" id="TenderMegTableDtoMap">
+		<result column="USE_NAME" property="userName"></result>
+		<result column="PTE_NAME" property="typeName"></result>
+		<result column="USE_MEMO" property="memo"></result>		
+		<result column="USE_PHONE" property="phone"></result>
+		<result column="BID_PROJECT" property="project"></result>
+		<result column="BID_ID" property="id"></result>
+		<result column="USE_ID" property="useId"></result>
+		<result column="LEA_NAME" property="leaName"></result>
+		<result column="LEA_MEMO" property="leaMemo"></result>
+		<result column="LEA_ID" property="leaId"></result>					
+	</resultMap>
+ 
+     
+     <!-- 显示投标表信息（服务商） -->    
+   <select id="showThisBidderMeg" resultMap="TenderMegTableDtoMap">
+     SELECT * FROM T_BID B 
+INNER JOIN T_USER U ON U.USE_ID = B.BID_USE_ID 
+AND B.BID_ID = #{bidId} 
+LEFT JOIN T_PROVIDERTYPE P ON P.PTE_ID = U.USE_TYPE
+     </select> 
+  
+  <!-- 显示投标表信息（联盟） -->    
+   <select id="showThisBidderLeague" resultMap="TenderMegTableDtoMap">
+     SELECT * FROM T_BID B 
+INNER JOIN T_LEAGUE L ON B.BID_LEA_ID = L.LEA_ID 
+INNER JOIN T_USER U ON U.USE_ID = L.LEA_USE_ID AND B.BID_ID = #{bidId}
+     </select> 
+  
+  
+  <!-- 修改投标表的状态 -->  
+  <update id="updateBidType">
+  
+  UPDATE T_BID SET BID_STATE = #{type} WHERE BID_ID = #{bidId}
+  </update> 
+    
+   <!-- 改变需求的状态 -->
+ <update id="updateNeedState">
+  UPDATE T_NEED SET NEE_STATE = #{state} WHERE NEE_ID = #{needId}
+
+</update>
+
+<!-- 平台雇主的数量 -->
+ 
+<select id="crowdEmployerCount" resultType="java.lang.Integer">
+     SELECT COUNT(*) FROM T_USER WHERE USE_TYPE = 0
+     </select>
+<!-- 平台的服务商数量 -->     
+   
+   <select id="crowdServerPeopleCount" resultType="java.lang.Integer">
+     SELECT COUNT(*) FROM T_USER WHERE USE_TYPE != 0
+     </select>  
+    <!-- 平台交易的作品数量 -->
+    
+    <select id="crowdWorkCount" resultType="java.lang.Integer">
+     SELECT COUNT(*) FROM T_WORKS WHERE WOR_STATE = 3
+     </select> 
+      
+      <!-- 平台完成的需求数量 -->
+       <select id="crowdNeedCount" resultType="java.lang.Integer">
+     SELECT COUNT(*) FROM T_NEED WHERE NEE_STATE = 4
+     </select>
+</mapper>
