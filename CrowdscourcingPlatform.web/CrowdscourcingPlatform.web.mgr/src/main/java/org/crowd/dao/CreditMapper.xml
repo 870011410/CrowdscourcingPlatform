@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.CreditMapper">
+
+	<resultMap type="org.crowd.model.dto.UserDto" id="CreditResultMap">
+		<result column="USE_ID" property="id"></result>
+		<result column="USE_NAME" property="name"></result>
+		<result column="USE_SCORE" property="score"></result>
+		<result column="PTE_NAME" property="pteName"></result>
+	</resultMap>
+
+	<select id="countAllCredits" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_USER U JOIN T_PROVIDERTYPE P ON P.PTE_ID= U.USE_TYPE
+		<if test="name != null and name != '' ">
+			AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test="useType != null ">
+			AND U.USE_TYPE = #{useType}
+		</if>
+	</select>
+
+	<select id="showAllCredits" resultMap="CreditResultMap">
+		SELECT U.*,P.PTE_NAME FROM T_USER U JOIN T_PROVIDERTYPE P ON P.PTE_ID= U.USE_TYPE
+		<if test="name != null and name != '' ">
+			AND U.USE_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test="useType != null ">
+			AND U.USE_TYPE = #{useType}
+		</if>
+		<if test="orderBy == 'asc' ">
+			ORDER BY U.USE_SCORE ASC
+		</if>
+		<if test="orderBy == 'desc' ">
+			ORDER BY U.USE_SCORE DESC
+		</if>
+	</select>
+
+	<update id="updateCredit">
+		UPDATE T_USER U SET U.USE_SCORE= #{score} WHERE U.USE_ID= #{id}
+	</update>
+
+</mapper>

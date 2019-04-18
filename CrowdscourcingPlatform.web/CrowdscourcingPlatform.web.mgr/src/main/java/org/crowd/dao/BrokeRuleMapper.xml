@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.BrokeRuleMapper">
+	<!-- 违规记录表表字段映射 -->
+	<resultMap type="org.crowd.model.dto.BrokeRuleDto" id="initBrokeRuleDtoResultMap">
+		<result column="BRE_ID" property="id" />
+		<result column="BRE_STATE" property="state" />
+		<result column="BRE_CREATE_TIME" property="createTime" />
+		<result column="RUL_CONTENT" property="ruleContent" />
+		<result column="RTE_NAME" property="ruleTypeName" />
+		<result column="RTE_ID" property="ruleTypeId" />
+		<result column="USE_NAME" property="useName" />
+		<result column="BRE_RANK" property="rank" />
+		<result column="RUL_ID" property="ruleId" />
+
+	</resultMap>
+	<!-- 规则类型表字段映射 -->
+	<resultMap type="org.crowd.model.RuleType" id="initRuleTypeResultMap">
+		<result column="RTE_ID" property="id" />
+		<result column="RTE_Name" property="name" />
+
+	</resultMap>
+	<!-- 规则表字段映射 -->
+	<resultMap type="org.crowd.model.Rule" id="initRuleResultMap">
+		<result column="RUL_ID" property="id" />
+		<result column="RUL_Name" property="name" />
+		<result column="RUL_CONTENT" property="content" />
+
+	</resultMap>
+	<!-- 用户表字段映射 -->
+	<resultMap type="org.crowd.model.User" id="initUserResultMap">
+		<result column="USE_ID" property="id" />
+		<result column="USE_NAME" property="name" />
+		
+
+	</resultMap>
+	<!-- 曝光台配置界面数据初始化 -->
+	<select id="initBrokeRule" resultMap="initBrokeRuleDtoResultMap">
+		SELECT BRE_ID,BRE_STATE,RUL_CONTENT,BRE_CREATE_TIME,RTE_NAME,RTE_ID,USE_NAME,BRE_RANK,RUL_ID
+		FROM T_BROKERULE a 
+		JOIN T_USER b ON a.bre_use_id=b.use_id 
+		JOIN T_RULE c ON a.bre_rul_id=c.rul_id 
+		JOIN T_RULETYPE d ON c.rul_rte_id=d.rte_id 
+		WHERE b.use_name LIKE CONCAT(CONCAT('%',#{name}),'%') 
+
+		<if test="begin!=''">
+			AND TO_CHAR(BRE_CREATE_TIME,'yyyy-mm-dd')&gt;=#{begin}
+			AND TO_CHAR(BRE_CREATE_TIME,'yyyy-mm-dd')&lt;=#{end}
+		</if>
+		<if test="state!=null">
+			AND BRE_STATE=#{state}	
+		</if>
+		<if test="rule!=null">
+			AND RTE_ID=#{rule}	
+		</if>
+		ORDER BY BRE_RANK
+	</select>
+	<select id="initBrokeRuleCount" resultType="java.lang.Integer">
+		SELECT count(*) 
+		FROM T_BROKERULE a 
+		JOIN T_USER b ON a.bre_use_id=b.use_id 
+		JOIN T_RULE c ON a.bre_rul_id=c.rul_id 
+		JOIN T_RULETYPE d ON c.rul_rte_id=d.rte_id 
+		WHERE b.use_name LIKE CONCAT(CONCAT('%',#{name}),'%') 
+
+		<if test="begin!=''">
+			AND TO_CHAR(BRE_CREATE_TIME,'yyyy-mm-dd')&gt;=#{begin}
+			AND TO_CHAR(BRE_CREATE_TIME,'yyyy-mm-dd')&lt;=#{end}
+		</if>
+		<if test="state!=null">
+			AND BRE_STATE=#{state}	
+		</if>
+		<if test="rule!=null">
+			AND RTE_ID=#{rule}	
+		</if>
+
+	</select>
+	
+	<!-- 获取规则类型下拉框数据 -->
+	<select id="selectRuleType" resultMap="initRuleTypeResultMap">
+		SELECT * FROM T_RULETYPE
+	</select>
+	
+	<!-- 获取规则下拉框数据 -->
+	<select id="selectRule" resultMap="initRuleResultMap">
+		SELECT * FROM T_RULE
+	</select>
+	
+	<!-- 获取规则内容 -->
+	<select id="selectRuleContent" resultMap="initRuleResultMap">
+		SELECT * FROM T_RULE WHERE RUL_ID=#{id}
+	</select>
+	
+	<!-- 曝光台发布内容修改-->
+	<update id="updateBrokeRule" >
+		UPDATE T_BROKERULE SET BRE_RUL_ID=#{ruleId} WHERE BRE_ID=#{brokeRule_id}
+	</update>
+	
+	<!-- 曝光台违规记录的删除-->
+	<delete id="delBrokeRule" >
+		DELETE FROM T_BROKERULE WHERE BRE_ID=#{brokeRule_id}
+	</delete>
+	
+	<!-- 置顶违规记录前先后移之前的记录-->
+	<update id="beforeStick">
+		UPDATE T_BROKERULE  SET BRE_RANK=BRE_RANK+1 WHERE BRE_RANK &lt; #{brokeRule_rank}
+	</update>
+	
+	<!-- 置顶违规记录-->
+	<update id="stickBrokeRule">
+		UPDATE T_BROKERULE  SET BRE_RANK=1 WHERE BRE_ID= #{brokeRule_id}
+	</update>
+	
+	<!-- 曝光台违规记录上线-->
+	<update id="upOrDownBrokeRule">
+		UPDATE T_BROKERULE  SET BRE_state=#{state} WHERE BRE_ID= #{brokeRule_id}
+	</update>
+	
+	<!-- 获取所有用户下拉框数据 -->
+	<select id="selectUser" resultMap="initUserResultMap">
+		SELECT * FROM T_USER
+	</select>
+	
+	<!-- 规则类型ID查规则ID -->
+	<select id="selectRuleId" resultMap="initRuleResultMap">
+		SELECT * FROM T_RULE JOIN T_RULETYPE ON RUL_RTE_ID=RTE_ID WHERE RUL_RTE_ID=#{id}
+	</select>
+	
+	<!-- 曝光台违规记录发布-->
+	<insert id="createBrokeRule">
+		INSERT INTO T_BROKERULE  VALUES
+		(SEQ_BRE.NEXTVAL,#{userId},#{ruleId},0,SEQ_BRE_RANK.NEXTVAL,null,sysdate,sysdate)
+	</insert>
+	
+
+</mapper>

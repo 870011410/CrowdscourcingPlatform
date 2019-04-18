@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+     "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ <mapper namespace="org.crowd.dao.PostNeedMapper">
+   
+   
+   <!-- 需求类型对象映射 -->
+   <resultMap type="org.crowd.model.NeedTypeModel" id="needTypeModelResultMap">
+     <result column="NTE_ID" property="id" />
+     <result column="NTE_NAME" property="name" />
+      <result column="NTE_STE_ID" property="steId" />
+     </resultMap>
+   <!-- 查找所有配置过的需求类型 -->
+     <select id="selectNeedType" resultMap="needTypeModelResultMap">
+     SELECT * FROM T_NEEDTYPE
+     </select>
+   <insert id="addNewNedd">
+   INSERT INTO T_NEED VALUES (SEQ_NEE.NEXTVAL,#{title},#{content},
+    #{require},#{money},#{userId},#{needTypeId},0,to_Date(#{endTime},'yyyy-mm-dd'),null,#{weekDate}
+    ,SYSDATE,null)
+   </insert> 
+     
+</mapper>

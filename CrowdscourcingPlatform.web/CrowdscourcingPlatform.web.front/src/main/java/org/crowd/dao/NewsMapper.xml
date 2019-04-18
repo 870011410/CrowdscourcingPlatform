@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.NewsMapper">
+
+	<resultMap type="org.crowd.model.News" id="newsResultMap">
+		<result column="NEW_ID" property="id"></result>
+		<result column="NEW_NAME" property="name"></result>
+		<result column="NEW_LINK" property="link"></result>
+		<result column="NEW_STATE" property="state"></result>
+		<result column="NEW_CREATE_TIME" property="createTime"></result>
+	</resultMap>
+
+	<!-- 分页查询行业资讯的信息 -->
+	<select id="searchNewsInfo" resultMap="newsResultMap">
+		SELECT * FROM T_NEWS N WHERE N.NEW_STATE=1 ORDER BY N.NEW_ID DESC
+	</select>
+
+	<!-- 查询行业资讯的总数 -->
+	<select id="searchNewsCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_NEWS N WHERE N.NEW_STATE=1
+	</select>
+</mapper>

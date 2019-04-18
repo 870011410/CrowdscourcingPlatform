@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.NewsMapper">
+
+	<resultMap type="org.crowd.model.News" id="newsResultMap">
+		<result column="NEW_ID" property="id"></result>
+		<result column="NEW_NAME" property="name"></result>
+		<result column="NEW_LINK" property="link"></result>
+		<result column="NEW_STATE" property="state"></result>
+		<result column="NEW_CREATE_TIME" property="createTime"></result>
+	</resultMap>
+
+	<!-- 分页查询行业资讯的信息 -->
+	<select id="searchNewsInfo" resultMap="newsResultMap">
+		SELECT *FROM T_NEWS A 
+       <where>
+			<if test="name != null and name != '' ">
+				AND A.NEW_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+			</if>
+			<if test="state != null ">
+				AND A.NEW_STATE=#{state}
+			</if>
+			<if test="startTime != null and startTime != '' ">
+		    	AND TO_CHAR(A.NEW_CREATE_TIME,'YYYY-MM-DD')&gt;=#{startTime}
+		       	AND TO_CHAR(A.NEW_CREATE_TIME,'YYYY-MM-DD')&lt;=#{endTime}
+			</if>
+       </where> 
+       ORDER BY A.NEW_ID DESC
+	</select>
+	
+	<!-- 查询行业资讯的总数 -->
+	<select id="searchNewsCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_NEWS A 
+       <where>
+			<if test="name != null and name != '' ">
+				AND A.NEW_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+			</if>
+			<if test="state != null ">
+				AND A.NEW_STATE=#{state}
+			</if>
+			<if test="startTime != null and startTime != '' ">
+		    	AND TO_CHAR(A.NEW_CREATE_TIME,'YYYY-MM-DD')&gt;=#{startTime}
+		       	AND TO_CHAR(A.NEW_CREATE_TIME,'YYYY-MM-DD')&lt;=#{endTime}
+			</if>
+       </where> 
+	</select>
+	
+	<!-- 新增一条行业资讯 -->
+	<insert id="createNews">
+		INSERT INTO T_NEWS 
+		(NEW_ID,NEW_NAME,NEW_LINK,NEW_STATE,NEW_CREATE_TIME) 
+		VALUES
+		(SEQ_NEW.NEXTVAL,#{name},#{link},0,SYSDATE)
+	</insert>
+	
+	<!-- 删除一条行业资讯 -->
+	<delete id="deleteNews">
+		DELETE T_NEWS WHERE NEW_ID=#{id}
+	</delete>
+		
+	<!-- 修改一条行业资讯 -->
+	<update id="modifyNews">
+		UPDATE T_NEWS 
+		SET NEW_NAME=#{name},NEW_LINK=#{link},NEW_UPDATE_TIME=SYSDATE 
+		WHERE NEW_ID=#{id}
+	</update>
+	
+	<!-- 上线一条行业资讯 -->
+	<update id="onlineNews">
+		UPDATE T_NEWS SET NEW_STATE=1,NEW_UPDATE_TIME=SYSDATE WHERE NEW_ID=#{id}
+	</update>
+	
+	<!-- 下线一条行业资讯 -->
+	<update id="offlineNews">
+		UPDATE T_NEWS SET NEW_STATE=0,NEW_UPDATE_TIME=SYSDATE WHERE NEW_ID=#{id}
+	</update>
+	
+
+</mapper>

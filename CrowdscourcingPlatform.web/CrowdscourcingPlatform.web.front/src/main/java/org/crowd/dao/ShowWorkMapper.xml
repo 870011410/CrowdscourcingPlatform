@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+     "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="org.crowd.dao.ShowWorkMapper">
+
+	<!-- 作品表字段映射 -->
+	<resultMap type="org.crowd.model.dto.WorkDto" id="initWorkDtoResultMap">
+		<result column="WOR_ID" property="id" />
+		<result column="WOR_TITLE" property="title" />
+		<result column="WOR_CONTENT" property="content" />
+		<result column="WOR_UPDATE_TIME" property="updateTime" />
+		<result column="USE_NAME" property="useName" />
+		<result column="WOR_MONEY" property="money" />
+		<result column="WOR_STATE" property="state" />
+		<result column="WOR_TYPE" property="type" />
+		<result column="WOR_IMG" property="src" />
+		<result column="NTE_NAME" property="neeName" />
+		<result column="WOR_CREATE_TIME" property="createTime" />
+	</resultMap>
+
+	<!-- 上架中的作品的数量 -->
+	<select id="selectWorkCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM T_WORKS T
+		INNER JOIN T_USER U ON T.WOR_USE_ID= U.USE_ID AND T.WOR_STATE =1
+		INNER JOIN T_NEEDTYPE NE
+		ON T.WOR_TYPE = NE.NTE_ID
+		<if test="servId != -1 and servId!=null">
+ 			AND NE.NTE_STE_ID =#{servId}
+        </if>
+		
+		AND T.WOR_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%')
+		<if test="typeId != -1 and typeId!=null">
+ 			AND T.WOR_TYPE =#{typeId}
+        </if>
+    		
+		
+	</select>
+
+	<!--显示上架中的作品 -->
+	<select id="selectWorkMeg" resultMap="initWorkDtoResultMap">
+		SELECT * FROM T_WORKS T
+		INNER JOIN T_USER U ON T.WOR_USE_ID= U.USE_ID AND T.WOR_STATE =1
+		INNER JOIN T_NEEDTYPE NE 
+		ON T.WOR_TYPE = NE.NTE_ID
+		<if test="servId != -1 and servId!=null">
+ 			AND NE.NTE_STE_ID =#{servId}
+        </if>
+		
+		AND T.WOR_TITLE LIKE CONCAT(CONCAT('%',#{title}),'%')
+		<if test="typeId != -1 and typeId!=null">
+ 			AND T.WOR_TYPE =#{typeId}
+        </if>
+        	ORDER BY T.WOR_ID DESC
+	</select>
+	  <!-- 显示某一个作品的信息-->
+      <select id="selectWorkMegWithWorkId" resultMap="initWorkDtoResultMap">
+		SELECT * FROM T_WORKS T
+		INNER JOIN T_USER U ON T.WOR_USE_ID= U.USE_ID
+		INNER JOIN T_NEEDTYPE NE ON T.WOR_TYPE = NE.NTE_ID
+ 		AND T.WOR_ID =#{workId}
+     </select> 
+     
+      <!-- 购买作品-->
+      <update id="buyWork" >
+		UPDATE T_WORKS SET WOR_STATE =2,WOR_BUYER_ID=#{buyerId} WHERE WOR_ID=#{workId}
+     </update> 
+     <!-- 购买作品消费金钱-->
+      <update id="motifyBuyerMoney" >
+		UPDATE T_USER SET USE_MONEY =USE_MONEY-#{workMoney} WHERE USE_NAME=#{userName}
+     </update> 
+     <!-- 购买作品卖家收款-->
+      <update id="motifySellerMoney" >
+		UPDATE T_USER SET USE_MONEY =USE_MONEY+#{workMoney} WHERE USE_NAME=#{userName}
+     </update> 
+
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper    
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.crowd.dao.LogMapper">
+
+	<resultMap type="org.crowd.model.Log" id="LogResultMap">
+		<result column="LOG_ID" property="id"></result>
+		<result column="LOG_NAME" property="name"></result>
+		<result column="LOG_CONTENT" property="content"></result>
+		<result column="LOG_CREATE_TIME" property="createTime"></result>
+	</resultMap>
+
+	<insert id="createLog">
+		INSERT INTO T_LOG VALUES(SEQ_LOG.NEXTVAL,#{content},#{name},NULL,SYSDATE,NULL)
+	</insert>
+
+	<select id="countLog" resultType="java.lang.Integer">
+		SELECT COUNT(*) CO FROM T_LOG L WHERE L.LOG_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		<if test="time_from != null and time_from != '' ">
+			AND TO_CHAR(L.LOG_CREATE_TIME,'YYYY-MM-DD')&gt;= #{time_from} AND
+			TO_CHAR(L.LOG_CREATE_TIME,'YYYY-MM-DD')&lt;=
+			#{time_to}
+		</if>
+	</select>
+
+	<select id="showLogs" resultMap="LogResultMap">
+		SELECT * FROM T_LOG L WHERE L.LOG_NAME LIKE CONCAT(CONCAT('%',#{name}),'%')
+		<if test="time_from != null and time_from != '' ">
+			AND TO_CHAR(L.LOG_CREATE_TIME,'YYYY-MM-DD')&gt;= #{time_from} AND
+			TO_CHAR(L.LOG_CREATE_TIME,'YYYY-MM-DD')&lt;=
+			#{time_to}
+		</if>
+		order by L.LOG_CREATE_TIME DESC
+	</select>
+
+</mapper>
