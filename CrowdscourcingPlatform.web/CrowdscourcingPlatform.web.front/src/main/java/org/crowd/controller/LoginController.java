@@ -90,7 +90,9 @@ public class LoginController {
 		}
 		User user = new User();
 		try {
+
 			user = loginService.LoginServer(acc, pwd);
+
 		} catch (Exception e) {
 			// 用json
 			outJson.put("type", "fail");

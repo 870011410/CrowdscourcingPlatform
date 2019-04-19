@@ -50,8 +50,14 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public User LoginServer(String acc, String pwd) throws Exception {
-		
-		User user = userMapper.login(acc, pwd);
+		User user=null;
+		try{
+			user = userMapper.login(acc, pwd);
+		}catch (Exception e){
+			System.err.println("这里出错了"+e);
+			System.err.println("dao的实例"+userMapper);
+		}
+
 		int b = logMapper.createLog(user.getName(), "用户登录");
 
 		if (user != null && b > 0) {
