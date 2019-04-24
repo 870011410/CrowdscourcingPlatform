@@ -16,13 +16,14 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import redis.clients.jedis.Jedis;
 
 /**
  * <p>
  * Title : LoginController
  * </p>
  *
- * <p>
+* <p>
  * Description :
  * </p>
  *
@@ -57,6 +58,13 @@ public class LoginController {
     @RequestMapping("/do-login.action")
     @ResponseBody
     public JSONObject doLogin(String acc, String pwd, String code, HttpServletRequest req) {
+//        Jedis j=new Jedis("127.0.0.1");
+//        j.set("name","xiaoxiao");
+//        System.out.println("redis中的数据："+j.get("name"));
+        if (true){
+            System.out.println("这里这里");
+            throw new RuntimeException("出错了");
+        }
 
         if (acc.length() <= 0 || pwd.length() <= 0 || code.length() <= 0) {
             // 用json
@@ -105,6 +113,7 @@ public class LoginController {
         // 用json
         outJson.put("type", "success");
         outJson.put("user", user);
+
         return outJson;
     }
 
