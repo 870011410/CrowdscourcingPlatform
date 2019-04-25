@@ -1,9 +1,11 @@
 package org.crowd.model;
 
 import lombok.*;
+
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 	private Integer id; // 用户ID
 	private String acc; // 用户账号
@@ -22,7 +24,7 @@ public class User {
 //	public User() {
 //		// TODO Auto-generated constructor stub
 //	}
-//
+
 //	public User(Integer id, String acc, String pwd, String name, String phone, String email, double money,
 //			Integer score, Integer type, Integer state, String createTime, String memo, String src) {
 //		super();
