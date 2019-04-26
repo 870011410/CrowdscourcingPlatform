@@ -61,10 +61,6 @@ public class LoginController {
 //        Jedis j=new Jedis("127.0.0.1");
 //        j.set("name","xiaoxiao");
 //        System.out.println("redis中的数据："+j.get("name"));
-        if (true){
-            System.out.println("这里这里");
-            throw new RuntimeException("出错了");
-        }
 
         if (acc.length() <= 0 || pwd.length() <= 0 || code.length() <= 0) {
             // 用json
