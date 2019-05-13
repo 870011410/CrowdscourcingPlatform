@@ -2,11 +2,14 @@ package org.crowd.model;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User implements Serializable {
+	private static final long serialVersionUID = 5021582410009851677L;
 	private Integer id; // 用户ID
 	private String acc; // 用户账号
 	private String pwd; // 用户密码

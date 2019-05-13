@@ -492,7 +492,8 @@ public class PageJumpController {
 	@RequestMapping("logining.html")
 	public ModelAndView logining(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
-		request.getSession().setAttribute("user", null);
+//		request.getSession().setAttribute("user", null);
+		request.getSession().invalidate();
 		mv.setViewName("login");
 		return mv;
 	}

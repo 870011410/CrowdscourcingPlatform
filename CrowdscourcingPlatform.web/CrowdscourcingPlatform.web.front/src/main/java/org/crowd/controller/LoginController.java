@@ -54,25 +54,24 @@ public class LoginController {
 
     private JSONObject outJson = new JSONObject();
 
+    private static int num=0;
     // 登录
     @RequestMapping("/do-login.action")
     @ResponseBody
     public JSONObject doLogin(String acc, String pwd, String code, HttpServletRequest req) {
-//        Jedis j=new Jedis("127.0.0.1");
-//        j.set("name","xiaoxiao");
-//        System.out.println("redis中的数据："+j.get("name"));
-
         if (acc.length() <= 0 || pwd.length() <= 0 || code.length() <= 0) {
             // 用json
             outJson.put("type", "illegal");
             return outJson;
         }
 
-
-
+        System.err.println(num+++"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        System.err.println(RanImage.code.toLowerCase()+"@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.err.println(code.toLowerCase()+"!!!!!!!!!!!!!!!!!!!!");
+        String imageCode=(String)req.getSession().getAttribute("code");
 
         // 判断验证码
-        if (RanImage.code.toLowerCase().equals(code.toLowerCase()) == false) {
+        if (imageCode.toLowerCase().equals(code.toLowerCase()) == false) {
             // 用json
             outJson.put("type", "codeWrong");
             return outJson;
@@ -91,6 +90,7 @@ public class LoginController {
             return outJson;
         }
         User user = new User();
+
         try {
 
             user = loginService.LoginServer(acc, pwd);
@@ -106,6 +106,7 @@ public class LoginController {
         HttpSession session = req.getSession();
         session.setAttribute("user", user);
 
+
         // 用json
         outJson.put("type", "success");
         outJson.put("user", user);
@@ -116,7 +117,7 @@ public class LoginController {
     // 验证码
     @RequestMapping("/do-ranImage.action")
     public void imageCode(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ImageIO.write(RanImage.getVerification(), "png", response.getOutputStream()); // 将图片验证码输出
+        ImageIO.write(RanImage.getVerification(request), "png", response.getOutputStream()); // 将图片验证码输出
     }
 
     // 注册

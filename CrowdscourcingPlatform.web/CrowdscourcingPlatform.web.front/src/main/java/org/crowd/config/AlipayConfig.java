@@ -54,6 +54,7 @@ public class AlipayConfig {
 	 */
 	public static void logResult(String sWord) {
 
+
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(log_path + "alipay_log_" + System.currentTimeMillis() + ".txt");

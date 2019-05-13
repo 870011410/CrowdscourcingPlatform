@@ -92,6 +92,8 @@ body {
 </style>
 </head>
 <body>
+<h1><%=request.getLocalPort()%></h1>
+<h1><%=request.getSession().getId() %></h1>
 
 	<div class="div-logArea">
 		<div class="div-wel">登 录</div>

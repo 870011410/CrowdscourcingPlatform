@@ -20,9 +20,11 @@
         </property>
         <property name="fileEncoding" value="UTF-8"/>
     </bean>
-	
+
 	<!-- 开启注解扫描 -->
 	<context:annotation-config/>
+
+	<context:component-scan base-package="org.springframework.web.filter"/>
 
 	<!-- 自动扫描的包名 -->
 	<context:component-scan base-package="org.crowd.service.impl"/>
@@ -40,6 +42,24 @@
 		<property name="removeAbandoned" 		value="true"/>
 		<property name="removeAbandonedTimeout" value="180"/>
 		<property name="connectionProperties" 	value="config.decrypt=true"/>
+	</bean>
+
+	<!--spring-session	-->
+	<bean id="redisHttpSessionConfiguration" class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+		<property name="maxInactiveIntervalInSeconds" value="600"/>
+	</bean>
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="100"/>
+		<property name="maxIdle" value="10"/>
+	</bean>
+
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy">
+		<property name="hostName" value="localhost"/>
+		<property name="port" value="6379"/>
+		<property name="timeout" value="3000"/>
+		<property name="usePool" value="true"/>
+		<property name="poolConfig" ref="jedisPoolConfig"/>
 	</bean>
 
 	<!-- SqlSessionFactory -->

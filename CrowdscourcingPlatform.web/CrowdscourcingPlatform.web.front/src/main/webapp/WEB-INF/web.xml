@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
-  <!-- Spring的配置 Start -->
+
+
+	<!-- Spring的配置 Start -->
 	<context-param>
 		<description>配置spring读取的xml文件,param-name是spring规定,spring自动加载以下内容.</description>
 		<param-name>contextConfigLocation</param-name>
@@ -11,8 +13,16 @@
 	</listener>
 	<!-- Spring的配置 Ends -->
 
-	<!-- SpringMVC 配置 Start -->
-	
+	<filter>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSessionRepositoryFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
 	<!-- Web请求编码过滤器,POST中文乱码解决方案 -->
 	<filter>
 		<filter-name>characterEncodingFilter</filter-name>
@@ -26,7 +36,7 @@
 		<filter-name>characterEncodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<!-- xss注入过滤器 -->
     <filter>
         <filter-name>xssRequestFilter</filter-name>
@@ -54,4 +64,5 @@
 	</servlet-mapping>
 
 	<!-- SpringMVC 配置 Ends -->
+
 </web-app>

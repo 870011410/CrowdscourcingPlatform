@@ -274,7 +274,8 @@
 	</style>
 
 	<body>
-
+	<h1><%=request.getLocalPort()%></h1>
+	<h1><%=request.getSession().getId() %></h1>
 		<div class="layui-bg-black layui-carousel" style="white-space: nowrap" id="test1">
 			<div class="layui-container-logo">
 				<a href="homePage.html" style="color: #FFB800;font-size: 22px;line-height: 56px;font-family:'华文细黑'">

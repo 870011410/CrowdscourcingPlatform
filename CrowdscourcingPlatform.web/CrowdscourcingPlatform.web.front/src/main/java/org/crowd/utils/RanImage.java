@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 public class RanImage {
 
@@ -26,7 +27,7 @@ public class RanImage {
 		return inputStream;
 	}
 
-	public static BufferedImage getVerification() {
+	public static BufferedImage getVerification(HttpServletRequest request) {
 		// 构造一幅图片,并得到图行
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		Graphics g = image.getGraphics();
@@ -39,7 +40,7 @@ public class RanImage {
 		// 画出图片中的文字
 		String text = setText((Graphics2D) g);
 		code = text;
-
+		request.getSession().setAttribute("code",code);
 		return image;
 	}
 
